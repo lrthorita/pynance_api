@@ -328,6 +328,8 @@ class PlanSimulator:
                 format_printable_string(print_currency(self.monthly_investment),BLUE))+\
                 "\nentão você atingirá sua liberdade financeira com {}.".format(
                     format_printable_string("{} anos".format(self.desired_age),GREEN)))
+                
+        input_or_timeout(10, "\nVou esperar você ler... :)\n[Aperte ENTER quando quiser continuar...]")
 
 def main():
     simulation = PlanSimulator()
