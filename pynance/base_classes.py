@@ -1,3 +1,5 @@
+#!/usr/bin/python
+# -- coding: utf-8 --
 """
 Author:Luiz Ricardo Takeshi Horita
 Date:2020-04-12
