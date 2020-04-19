@@ -89,10 +89,13 @@ def convert_dot_to_comma(value):
     return str(value).replace(".",",")
 
 def input_or_timeout(timeout, msg=""):
-    def nothing(sig, frame): pass
-    signal.signal(signal.SIGALRM, nothing)
-    signal.alarm(timeout)
     try:
+        def nothing(sig, frame): pass
+        signal.signal(signal.SIGALRM, nothing)
+        signal.alarm(timeout)
+        try:
+            input(msg)
+            signal.alarm(0)
+        except (IOError, EOFError): pass
+    except:
         input(msg)
-        signal.alarm(0)
-    except (IOError, EOFError): pass
