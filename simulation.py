@@ -354,7 +354,7 @@ class PlanSimulator:
                         "\nPara isso, você precisará focar em {}.".format(
                             format_printable_string("aumentar sua renda mensal", GREEN))+\
                         "\nEnquanto isso, podemos projetar em quanto tempo você conseguiria"+\
-                        " alcançar a sua meta se investisse uma quantia dentro de sua realidade."+\
+                        " alcançar\na sua alcançar a sua meta se investisse uma quantia dentro de sua realidade."+\
                         "\n\nVocê quer descobrir isso?")
             decision = input("[Responda com sim(s) ou não(n)]\nResposta: ")
             if decision[0].lower() == "s":
