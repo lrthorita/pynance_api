@@ -25,6 +25,8 @@ echo                  ^|
 echo                  ^|
 echo                  ^|
 echo                                   ...DEPOIS "Install NOW"
+echo . & echo.Pressione barra de ESPACO para iniciar instalacao. . .
+pause >NUL
 start "" "dependencies\python-3.8.2-amd64.exe"
 echo .................................................................
 echo Pressione barra de ESPACO para continuar. . .
