@@ -10,31 +10,46 @@ from pynance.my_financial_plan import MyFinancialPlan
 from pynance.utils import *
 from time import time
 
+import colorama
+colorama.init()
+
 class PlanSimulator:
     def __init__(self):
         super().__init__()
         self.income = {}
         self.outcome = {}
 
+    def _wait_user(self):
+        display_msg(format_printable_string("\n============================================"+\
+                                            "\n|  Py Nance: - Vou esperar você ler... :)  |"+\
+                                            "\n============================================",CYAN))
+        input_or_timeout(10, "[Aperte ENTER quando quiser continuar...]")
+
     def starting_message(self):
         display_msg("\nOlá! Sou o {}, e vou te ajudar a planejar sua liberdade financeira!".format(
-            format_printable_string("PyNance", BLUE)
+            format_printable_string("PyNance", CYAN)
         ))
 
-        self.name = input("\nQual seu nome?\nResposta: ")
+        display_msg("\nQual seu {}?".format(format_printable_string("nome",is_underlined=True)))
+        self.name = input("Resposta: ")
         if self.name == "":
-            self.name = input("\nPerdoe-me. Pode repetir seu nome?\nResposta: ")
-        display_msg("{}".format(format_printable_string("\nMuito prazer, {}!".format(self.name),BLUE)))
-        input("Bora começar? :D\n[Aperte ENTER para continuar]")
+            display_msg("\nPerdoe-me. Pode repetir seu {}?".format(format_printable_string(
+                                                                    "nome",is_underlined=True)))
+            self.name = input("Resposta: ")
+        display_msg("{}".format(format_printable_string("\nMuito prazer, {}!".format(self.name),GREEN)))
+        display_msg("Bora começar? :D\t\t{}".format(format_printable_string("[Aperte ENTER para continuar]",CYAN)))
+        input()
 
     def knowing_the_user_income(self):
         print("\n***********************")
         while True:
-            self.income_source = int(input("\nQual sua(s) fonte(s) de renda atualmente?"+\
-                                        "\n[Digite o número da opção]\n"+\
-                                        "\n  (1) salário"+\
-                                        "\n  (2) algum tipo de bolsa isento de imposto"+\
-                                        "\n  (3) ambos\n\nResposta: "))
+            display_msg("\nQual sua(s) {} atualmente?".format(format_printable_string("fonte(s) de renda",
+                                                                                    is_underlined=True))+\
+                        "\n[Digite o número da opção]\n"+\
+                        "\n  (1) salário"+\
+                        "\n  (2) algum tipo de bolsa isento de imposto"+\
+                        "\n  (3) ambos\n")
+            self.income_source = int(input("Resposta: "))
             if self.income_source in [1,2,3]:
                 break
             display_msg("\nDesculpe. {}".format(format_printable_string(
@@ -42,85 +57,82 @@ class PlanSimulator:
 
     def _getting_incomes(self):
         if self.income_source == 1:
-            self.gross_salary = float(convert_number_abrev(
-                                        input("\nQual seu {}?\nResposta: R$"\
-                                            .format(format_printable_string(
-                                                "salário bruto",is_underlined=True)))))
+            display_msg("\nQual seu {}?".format(format_printable_string("salário bruto",
+                                                                        is_underlined=True)))
+            self.gross_salary = float(convert_number_abrev(input("Resposta: R$")))
             self.income["Salário bruto"] = self.gross_salary
             self.aid_grant = 0.0
         if self.income_source == 2:
             self.gross_salary = 0.0
-            self.aid_grant = float(convert_number_abrev(
-                                        input("\nQual valor da sua {}?\nResposta: R$"\
-                                            .format(format_printable_string(
-                                                "bolsa/auxílio",is_underlined=True)))))
+            display_msg("\nQual valor da sua {}?".format(format_printable_string("bolsa/auxílio",
+                                                                        is_underlined=True)))
+            self.aid_grant = float(convert_number_abrev(input("Resposta: R$")))
             self.income["Bolsa/auxílio"] = self.aid_grant
         if self.income_source == 3:
-            self.gross_salary = float(convert_number_abrev(
-                                        input("\nQual seu {}?\nResposta: R$"\
-                                            .format(format_printable_string(
-                                                "salário bruto",is_underlined=True)))))
+            display_msg("\nQual seu {}?".format(format_printable_string("salário bruto",
+                                                                        is_underlined=True)))
+            self.gross_salary = float(convert_number_abrev(input("Resposta: R$")))
             self.income["Salário bruto"] = self.gross_salary
-            self.aid_grant = float(convert_number_abrev(
-                                        input("\nQual valor da sua {}?\nResposta: R$"\
-                                            .format(format_printable_string(
-                                                "bolsa/auxílio",is_underlined=True)))))
+            display_msg("\nQual valor da sua {}?".format(format_printable_string("bolsa/auxílio",
+                                                                        is_underlined=True)))
+            self.aid_grant = float(convert_number_abrev(input("Resposta: R$")))
             self.income["Bolsa/auxílio"] = self.aid_grant
 
     def knowing_the_finance_situation(self):
         display_msg("\n***********************"+\
             "\nCerto, {}. Primeiro, vamos descobrir sua {} hoje."\
                 .format(self.name, format_printable_string("situação financeira",BLUE,is_bold=True)))
-        self.patrimony = float(convert_number_abrev(
-                                input("\nQuanto você tem de {} hoje?\nResposta: R$"\
-                                    .format(format_printable_string(
-                                            "patrimônio", is_underlined=True)))))
-        self.debt = float(convert_number_abrev(
-                            input("\nE quanto você tem de {}?\nResposta: -R$"\
-                                    .format(format_printable_string(
-                                            "dívida", is_underlined=True)))))
+        
+        display_msg("\nQuanto você tem de {} hoje?".format(format_printable_string(
+                                                            "patrimônio", is_underlined=True)))
+        self.patrimony = float(convert_number_abrev(input("Resposta: R$")))
+
+        display_msg("\nE quanto você tem de {}?".format(format_printable_string(
+                                            "dívida", is_underlined=True)))
+        self.debt = float(convert_number_abrev(input("Resposta: -R$")))
         self.capital = self.patrimony - self.debt
 
         self._getting_incomes()
 
-        self.is_parent = input("\nVocê possui {} (filhos, pais, avós ou bisavós)?"\
-                                   .format(format_printable_string(
-                                       "dependentes",is_underlined=True))+\
-                               "\n[Responda com sim(s) ou não(n)]\nResposta: ")
-        while self.is_parent[0].lower() not in ['s', 'n']:
+        display_msg("\nVocê possui {} (filhos, pais, avós ou bisavós)?".format(format_printable_string(
+                                                                    "dependentes",is_underlined=True))+\
+                    "\n[Responda com sim(s) ou não(n)]")
+        self.is_parent = input("Resposta: ")
+        while self.is_parent[0].lower() not in ['s', 'n', '0']:
             self.is_parent = input("\nPor favor, responda sim(s) ou não(n): ")
         if self.is_parent[0].lower() == 's':
             while True:
                 try:
-                    self.dependents = int(input("\nQuantos dependentes?\nResposta: "))
+                    display_msg("\nQuantos {}?".format(format_printable_string("dependentes",
+                                                                            is_underlined=True)))
+                    self.dependents = int(input("Resposta: "))
                     break
                 except:
                     display_msg("Desculpe, não entendi...")
                     continue
+            
+            display_msg("\nVocê paga {}?\nColoque R$0 se não for o caso.".format(format_printable_string(
+                                                                    "pensão alimentícia",is_underlined=True)))
             self.pensions = float(convert_number_abrev(\
-                                input("\nVocê paga {}?\nColoque R$0 se não for o caso."\
-                                      .format(format_printable_string(
-                                            "pensão alimentícia",is_underlined=True))+\
-                                      "\nResposta: R$")))
+                                input("Resposta: R$")))
             self.outcome["Pensão alimentícia"] = self.pensions
         else:
             self.dependents = 0
             self.pensions = 0
 
+        display_msg("\nQual o {} que você precisaria {} todo mês?".format(
+                                                    format_printable_string(
+                                                        "mínimo",is_underlined=True),
+                                                    format_printable_string(
+                                                        "para se manter",is_underlined=True)))
         self.life_cost = float(convert_number_abrev(\
-                            input("\nQual o {} que você precisaria {} todo mês?\nResposta: R$"\
-                                .format(
-                                    format_printable_string(
-                                        "mínimo",is_underlined=True),
-                                    format_printable_string(
-                                        "para se manter",is_underlined=True)))))
+                            input("Resposta: R$")))
         self.outcome["Custo de vida mensal"] = self.life_cost
 
-        display_msg("\nTodos nós costumamos gastar um pouco com lazer nos fins de semana, certo?")
-        self.consumption = float(convert_number_abrev(
-                                input("Quanto você costuma gastar todo mês {}?\nResposta: R$"\
-                                    .format(format_printable_string(
-                                        "além do valor necessário",is_underlined=True)))))
+        display_msg("\nTodos nós costumamos gastar um pouco com lazer nos fins de semana, certo?"+\
+                    "\nQuanto você costuma gastar todo mês {}?".format(format_printable_string(
+                                                    "além do valor necessário",is_underlined=True)))
+        self.consumption = float(convert_number_abrev(input("Resposta: R$")))
         self.outcome["Consumos extras"] = self.consumption
 
     def analyzing_profile(self):
@@ -191,7 +203,7 @@ class PlanSimulator:
             format_printable_string(
                 self.fin_planner.financial_state.phase_goal(), GREEN, is_underlined=True,)))
         
-        input_or_timeout(10, "\nVou esperar você ler... :)\n[Aperte ENTER quando quiser continuar...]")
+        self._wait_user()
 
     def planning_debt_pay_off(self):
         """TODO: Implement this! It may be related to """
@@ -200,23 +212,20 @@ class PlanSimulator:
     def planning_emergency_fund(self):
         display_msg("\n***********************"+\
             "\n{}, vamos começar nossos planos!\n".format(self.name)+\
-            "\nEm primeiro lugar, precisamos estar {}, certo? Por isso, precisamos ter um {}."\
+            "\nEm primeiro lugar, precisamos estar {}, certo?\nPor isso, precisamos ter um {}."\
             .format(format_printable_string("preparados para imprevistos",BLUE),
                     format_printable_string("fundo de emergência",BLUE)))
         display_msg("O recomendável é que você esteja preparado para {} de crise."\
             .format(format_printable_string("6 a 12 meses",RED)))
         
-        self.secure_period = int(convert_number_abrev(
-                             input("Caso ocorra uma crise, você quer estar preparado para {}?"\
-                                 .format(format_printable_string(
-                                        "quantos meses",is_underlined=True))+\
-                                "\nResposta: ")))
+        display_msg("Caso ocorra uma crise, você quer estar preparado para {}?"\
+                    .format(format_printable_string("quantos meses",is_underlined=True)))
+        self.secure_period = int(convert_number_abrev(input("Resposta: ")))
         if self.secure_period < 6:
-            self.secure_period = int(convert_number_abrev(
-                input("\nNão acha {} meses muito pouco?\nVamos...coloque {}."\
-                    .format(convert_dot_to_comma(self.secure_period),
-                            format_printable_string("pelo menos 6 meses",is_underlined=True))+\
-                    "\nResposta: ")))
+            display_msg("\nNão acha {} meses muito pouco?\nVamos...coloque {}.".format(
+                        convert_dot_to_comma(self.secure_period),
+                        format_printable_string("pelo menos 6 meses",is_underlined=True)))
+            self.secure_period = int(convert_number_abrev(input("Resposta: ")))
         self.fin_planner.secure_period = self.secure_period
 
         display_msg("\nOk. Isso quer dizer que você precisa ter um {} de pelo menos {}."\
@@ -224,17 +233,16 @@ class PlanSimulator:
                     format_printable_string(print_currency(
                         self.fin_planner.plan_emergency_fund()),BLUE)))
         
-        input_or_timeout(5, "\nVou esperar você ler... :)\n[Aperte ENTER quando quiser continuar...]")
+        self._wait_user()
 
     def planning_manumission(self):
         display_msg("\n***********************\n{}. Agora vamos falar sobre sua {}!".format(
                 self.name,
                 format_printable_string("liberdade financeira",GREEN)))
-        display_msg("\nPara planejarmos com quantos anos você alcançará este objetivo,"\
-                +" precisamos saber sua idade atual.")
-        self.age = int(convert_number_abrev(
-                        input("Qual sua {}?\nResposta: "\
-                            .format(format_printable_string("idade",is_underlined=True)))))
+        display_msg("\nPara planejarmos com quantos anos você alcançará este objetivo,"+\
+                    " precisamos saber sua idade atual.\nQual sua {}?".format(
+                        format_printable_string("idade",is_underlined=True)))
+        self.age = int(convert_number_abrev(input("Resposta: ")))
         self.fin_planner.update_age(self.age)
 
         display_msg("\nA {} é quando seus rendimentos passivos conseguem suprir "\
@@ -248,33 +256,29 @@ class PlanSimulator:
         self._try_new_manumission_plan()
 
     def _try_new_manumission_plan(self):
-        future_income_option = input("\nSua renda passiva desejada está em {} por mês".format(
-                                        format_printable_string(print_currency(self.desired_income),
-                                        BLUE))+\
-                                    "\nDeseja alterar este valor?\n[sim(s) ou não(n)]\nResposta: ")
+        display_msg("\nSua renda passiva desejada está em {} por mês".format(
+                        format_printable_string(print_currency(self.desired_income),BLUE))+\
+                    "\nDeseja alterar este valor?\n[sim(s) ou não(n)]")
+        future_income_option = input("Resposta: ")
         
         # Change desired income
         if future_income_option[0].lower() == "s":
-            self.desired_income = float(convert_number_abrev(
-                                    input("\nCerto. Quanto você quer {} lá no futuro?"\
-                                            .format(format_printable_string(
-                                                    "receber mensalmente",
+            display_msg("\nCerto. Quanto você quer {} lá no futuro?".format(
+                            format_printable_string("receber mensalmente",
                                                     is_underlined=True))+\
-                                        "\nLembre-se de que tem que ser pelo menos "+\
-                                        "o valor de seu custo mensal de vida ({})."\
-                                            .format(print_currency(self.life_cost))+\
-                                        "\nResposta: R$")))
+                        "\nLembre-se de que tem que ser pelo menos o valor de seu "+\
+                        "custo mensal de vida ({})."\
+                                            .format(print_currency(self.life_cost)))
+            self.desired_income = float(convert_number_abrev(input("Resposta: R$")))
 
         while self.desired_income < self.life_cost:
-            self.desired_income = float(convert_number_abrev(\
-                                    input("\nNa liberdade financeira, "+\
+            display_msg("\nNa liberdade financeira, "+\
                                     "você tem que receber o suficiente pelo menos para se manter."+\
-                                    "\nPor favor, coloque um valor {}.\nResposta: R$".format(
-                                        format_printable_string(
-                                            "maior que {}".format(
-                                                format_printable_string(
-                                                    print_currency(self.life_cost),RED)),
-                                            is_underlined=True)))))
+                                    "\nPor favor, coloque um valor {}.".format(format_printable_string(
+                                        "maior que {}".format(format_printable_string(print_currency(
+                                            self.life_cost),RED)),
+                                        is_underlined=True)))
+            self.desired_income = float(convert_number_abrev(input("Resposta: R$")))
         self.fin_planner.update_desired_income(self.desired_income)
         
         # 2 options for planning
@@ -282,9 +286,9 @@ class PlanSimulator:
             display_msg("\nTemos duas maneiras de planejar a sua {}:"\
                     .format(format_printable_string("liberdade financeira",GREEN))+\
                 "\n   (1) definindo a idade com qual você gostaria de atingir seu objetivo;"+\
-                "\n   (2) definindo quanto você irá investir mensalmente para atingir seu objetivo.")
-            plan_option = int(input("\nDiga-me qual opção você prefere."+\
-                                    "\n[Digite o número 1 ou 2]\nResposta: "))
+                "\n   (2) definindo quanto você irá investir mensalmente para atingir seu objetivo."+\
+                "\n\nDiga-me qual opção você prefere.\n[Digite o número 1 ou 2]")
+            plan_option = int(input("Resposta: "))
             if plan_option in [1,2]:
                 break
             display_msg("\nOk, vamos lá...")
@@ -295,9 +299,10 @@ class PlanSimulator:
         if plan_option == 1:
             self.monthly_investment = None
             while True:
-                self.desired_age = int(input("\nCerto. Com {} ".format(
-                                        format_printable_string("quantos anos",is_underlined=True))+\
-                                    "você gostaria de atingir sua liberdade financeira?\nResposta: "))
+                display_msg("\nCerto. Com {} ".format(format_printable_string("quantos anos",
+                                                                                is_underlined=True))+\
+                            "você gostaria de atingir sua liberdade financeira?")
+                self.desired_age = int(input("Resposta: "))
                 if self.desired_age > self.age:
                     break
                 display_msg("\nUai? Você não deveria escolher uma idade {}?".format(
@@ -306,10 +311,10 @@ class PlanSimulator:
         else:
             self.desired_age = None
             while True:
-                self.monthly_investment = float(convert_number_abrev(input(
-                                        "\nCerto. Qual {} ".format(format_printable_string(
-                                            "valor",is_underlined=True))+\
-                                        "você gostaria de investir todo mês?\nResposta: R$")))
+                display_msg("\nCerto. Qual {} ".format(format_printable_string("valor",
+                                                                    is_underlined=True))+\
+                            "você gostaria de investir todo mês?")
+                self.monthly_investment = float(convert_number_abrev(input("Resposta: R$")))
                 if self.monthly_investment < self.fin_planner.revenue:
                     break
                 display_msg("\nCuidado, {}. ".format(self.name)+\
@@ -345,7 +350,7 @@ class PlanSimulator:
                 "\nentão você atingirá sua liberdade financeira com {}.".format(
                     format_printable_string("{} anos".format(self.desired_age),GREEN)))
                 
-        input_or_timeout(10, "\nVou esperar você ler... :)\n[Aperte ENTER quando quiser continuar...]")
+        self._wait_user()
         
         diff = self.monthly_investment - self.fin_planner.revenue
         if diff > 0:
@@ -355,8 +360,8 @@ class PlanSimulator:
                             format_printable_string("aumentar sua renda mensal", GREEN))+\
                         "\nEnquanto isso, podemos projetar em quanto tempo você conseguiria"+\
                         " alcançar\na sua alcançar a sua meta se investisse uma quantia dentro de sua realidade."+\
-                        "\n\nVocê quer descobrir isso?")
-            decision = input("[Responda com sim(s) ou não(n)]\nResposta: ")
+                        "\n\nVocê quer descobrir isso?\n[Responda com sim(s) ou não(n)]")
+            decision = input("Resposta: ")
             if decision[0].lower() == "s":
                 self._get_manumission_projection(plan_option=2)
 
@@ -368,13 +373,23 @@ def _routine(simulator):
     simulator.planning_emergency_fund()
     simulator.planning_manumission()
 
-    display_msg("\nDepois desta simulação, você pode ter notado que é sim possível "+\
-                        "alcançar a liberdade financeira.\nTambém, pode ter aprendido a importância "+\
-                        "de saber gastar bem, de investir com consistência e,\nlogicamente, se "+\
-                        "esforçar para ganhar mais.\nPorém, nunca vá pela ganância, e seja paciente!")
-    display_msg("\nGostaria de tentar fazer mais uma simulação? :D"+\
-                "\nFicarei muito feliz de continuar te ajudando!")
-    decision = input("[Responda com sim(s) ou não(n)]\nResposta: ")
+    display_msg("\nDepois desta simulação, você pode ter notado que é sim {}.".format(
+                    format_printable_string("possível alcançar a liberdade financeira",GREEN)
+                )+\
+                "\nTambém, você viu a importância de saber {}, de {} e,\nlogicamente, esforçar-se para {}. "\
+                    .format(
+                        format_printable_string("gastar bem",BLUE),
+                        format_printable_string("investir com consistência",BLUE),
+                        format_printable_string("ganhar mais",BLUE)
+                    )+\
+                "Porém, nunca vá pela {}, e seja {}!".format(
+                    format_printable_string("ganância",RED),
+                    format_printable_string("paciente",BLUE)
+                ))
+    
+    display_msg("\nGostaria de tentar fazer {}? :D".format(format_printable_string("mais uma simulação",BLUE))+\
+                "\nFicarei muito feliz de continuar te ajudando!\n[Responda com sim(s) ou não(n)]")
+    decision = input("Resposta: ")
     if decision[0].lower() == "s":
         _routine(simulator)
 

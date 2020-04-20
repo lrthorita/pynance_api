@@ -7,6 +7,9 @@ Date: 2020-04-18
 import platform
 import signal
 
+import colorama
+colorama.init()
+
 operating_system = platform.system()
 
 if operating_system.lower() == "linux":
@@ -21,16 +24,26 @@ if operating_system.lower() == "linux":
     UNDERLINE = "\033[4m"
     END = "\033[0m"
 else:
-    PURPLE = ""
-    CYAN = ""
-    DARKCYAN = ""
-    BLUE = ""
-    GREEN = ""
-    YELLOW = ""
-    RED = ""
+    PURPLE = "\033[95m"
+    CYAN = "\033[96m"
+    DARKCYAN = "\033[36m"
+    BLUE = "\033[94m"
+    GREEN = "\033[92m"
+    YELLOW = "\033[93m"
+    RED = "\033[91m"
     BOLD = ""
-    UNDERLINE = ""
-    END = ""
+    UNDERLINE = "\033[93m"
+    END = "\033[0m"
+    # PURPLE = ""
+    # CYAN = ""
+    # DARKCYAN = ""
+    # BLUE = ""
+    # GREEN = ""
+    # YELLOW = ""
+    # RED = ""
+    # BOLD = ""
+    # UNDERLINE = ""
+    # END = ""
 
 
 def format_printable_string(string, color=None, is_bold=False, is_underlined=False):

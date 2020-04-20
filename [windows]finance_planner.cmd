@@ -53,6 +53,7 @@ echo .................................................................
 echo Mais um momento...to instalando algumas dependencias... & echo..
 pip install -r requirements.txt
 echo .................................................................
+cls
 echo Vamos comecar!!! & echo..
 python simulation.py
 echo .
