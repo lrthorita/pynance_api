@@ -171,7 +171,7 @@ class MyManumission(CompoundInterest):
             monthly_investment = self.get_pmt_for_fv(
                                                     desired_fv=desired_patrimony,
                                                     capital=current_capital,
-                                                    period=(desired_age-self.current_age),
+                                                    period=(desired_age-self.current_age)*12,
                                                     interest=investment_interest,
                                                     start_today=start_today)
         return desired_patrimony, monthly_investment, desired_age

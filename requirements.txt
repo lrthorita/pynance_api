@@ -1,2 +1,2 @@
 bancocentralbrasil==1.2.0
-requirements
+requests

@@ -99,3 +99,7 @@ def input_or_timeout(timeout, msg=""):
         except (IOError, EOFError): pass
     except:
         input(msg)
+
+def display_msg(msg:str):
+    # Simple print in terminal
+    print(msg)
