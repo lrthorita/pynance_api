@@ -207,24 +207,25 @@ class PlanSimulator:
         			"\n\t- Dívida\t: -{}".format(format_printable_string(
         				print_currency(self.debt),RED)))
         
-        if self.capital >= 0:
-	        display_msg("\nVocê possui patrimônio para pagar suas dívidas. Quite-as!\n"+\
-                        "Fazendo isso, você ficará com um capital de {}".format(format_printable_string(
-                            print_currency(self.capital),GREEN)))
-        else:
-            if self.fin_planner.revenue > 0:
-                display_msg("\n{}, foque em pagar suas dívidas!\nUse seu patrimônio para pagar o que conseguir, "\
-                                .format(self.name)+\
-                            "\ne depois use seu saldo mensal para ir quitando elas aos poucos.")
+        if self.debt > 0:
+            if self.capital >= 0:
+                display_msg("\nVocê possui patrimônio para pagar suas dívidas. Quite-as!\n"+\
+                            "Fazendo isso, você ficará com um capital de {}".format(format_printable_string(
+                                print_currency(self.capital),GREEN)))
             else:
-                if self.consumption > 0:
-                    display_msg("\n{} do céu! o.O\"\nEste não é um bom momento para continuar gastando {}".format(
-                                    self.name, format_printable_string(print_currency(self.consumption),RED))+\
-                                "\ncom supérfluos! Minimize seus gastos, procure meios de ganhar mais, e"+\
-                                "\n{}!".format(format_printable_string("pague suas dívidas",RED)))
+                if self.fin_planner.revenue > 0:
+                    display_msg("\n{}, foque em pagar suas dívidas!\nUse seu patrimônio para pagar o que conseguir, "\
+                                    .format(self.name)+\
+                                "\ne depois use seu saldo mensal para ir quitando elas aos poucos.")
                 else:
-                    display_msg("\nEita, {}! o.o\nPrecisaremos que você busque formas de aumentar sua renda, corte gastos e"+\
-                                "\nfoque em {}.".format(format_printable_string("pagar suas dívidas",RED)))
+                    if self.consumption > 0:
+                        display_msg("\n{} do céu! o.O\"\nEste não é um bom momento para continuar gastando {}".format(
+                                        self.name, format_printable_string(print_currency(self.consumption),RED))+\
+                                    "\ncom supérfluos! Minimize seus gastos, procure meios de ganhar mais, e"+\
+                                    "\n{}!".format(format_printable_string("pague suas dívidas",RED)))
+                    else:
+                        display_msg("\nEita, {}! o.o\nPrecisaremos que você busque formas de aumentar sua renda, corte gastos e"+\
+                                    "\nfoque em {}.".format(format_printable_string("pagar suas dívidas",RED)))
 
         display_msg("\nLEMBRETE: {}".format(
             format_printable_string(
