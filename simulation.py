@@ -37,7 +37,7 @@ class PlanSimulator:
                                                                     "nome",is_underlined=True)))
             self.name = input("Resposta: ")
         display_msg("{}".format(format_printable_string("\nMuito prazer, {}!".format(self.name),GREEN)))
-        display_msg("Bora começar? :D\t\t{}".format(format_printable_string("[Aperte ENTER para continuar]",CYAN)))
+        display_msg("Bora começar? :D\n{}".format(format_printable_string("[Aperte ENTER para continuar]",CYAN)))
         input()
 
     def knowing_the_user_income(self):
@@ -49,7 +49,7 @@ class PlanSimulator:
                         "\n  (1) salário"+\
                         "\n  (2) algum tipo de bolsa isento de imposto"+\
                         "\n  (3) ambos\n")
-            self.income_source = int(input("Resposta: "))
+            self.income_source = int("0"+input("Resposta: "))
             if self.income_source in [1,2,3]:
                 break
             display_msg("\nDesculpe. {}".format(format_printable_string(
@@ -167,7 +167,7 @@ class PlanSimulator:
             income_summary += item
         
         display_msg(income_summary)
-        display_msg("Isso totaliza um fluxo positivo de {} por mês".format(
+        display_msg("Isso totaliza um fluxo positivo de {}/mês".format(
             format_printable_string(print_currency(self.fin_planner.income),GREEN)))
 
         outcome_summary = "\nTodo mês você gasta com:"
@@ -183,23 +183,50 @@ class PlanSimulator:
             outcome_summary += item
 
         display_msg(outcome_summary)
-        display_msg("Isso totaliza um fluxo negativo de {} por mês.".format(
+        display_msg("Isso totaliza um fluxo negativo de {}/mês.".format(
             format_printable_string(
                 print_currency(self.fin_planner.outcome),RED)))
 
+        result_str = format_printable_string(print_currency(self.fin_planner.income),GREEN)+\
+        	 " - " + format_printable_string(print_currency(self.fin_planner.outcome),RED)+" = "
         if self.fin_planner.revenue > 0.0:
-            display_msg("\nPelo que vejo, todo mês você consegue um saldo de {}."\
-                .format(format_printable_string(
-                    print_currency(self.fin_planner.revenue),GREEN,is_bold=True)))
+            display_msg("\nPelo que vejo, todo mês você consegue um saldo de:\n\t"+\
+            			result_str + format_printable_string(print_currency(
+            				self.fin_planner.revenue),GREEN,is_bold=True)+"/mês")
         elif self.fin_planner.revenue < 0.0:
-            display_msg("\nPelo que vejo, todo mês você gera um prejuízo de {}."\
-                .format(format_printable_string(
-                    print_currency(self.fin_planner.revenue).replace('-',''),RED,is_bold=True)))
+            display_msg("\nPelo que vejo, todo mês você gera um prejuízo de:\n\t"+\
+            			result_str + format_printable_string(print_currency(
+            				self.fin_planner.revenue),RED,is_bold=True)+"/mês")
         else:
             display_msg("\nPelo que vejo, todo mês você fica no {}."\
                 .format(format_printable_string("zero a zero",RED,is_bold=True)))
 
-        display_msg("Isso quer dizer que, atualmente, {}.".format(
+        display_msg("\nAlém disso, você possui:"+\
+        			"\n\t- Patrimônio\t: {}".format(format_printable_string(
+        				print_currency(self.patrimony),GREEN))+\
+        			"\n\t- Dívida\t: -{}".format(format_printable_string(
+        				print_currency(self.debt),RED)))
+        
+        if self.capital >= 0:
+	        display_msg("\nVocê possui patrimônio para pagar suas dívidas. Quite-as!\n"+\
+                        "Fazendo isso, você ficará com um capital de {}".format(format_printable_string(
+                            print_currency(self.capital),GREEN)))
+        else:
+            if self.fin_planner.revenue > 0:
+                display_msg("\n{}, foque em pagar suas dívidas!\nUse seu patrimônio para pagar o que conseguir, "\
+                                .format(self.name)+\
+                            "\ne depois use seu saldo mensal para ir quitando elas aos poucos.")
+            else:
+                if self.consumption > 0:
+                    display_msg("\n{} do céu! o.O\"\nEste não é um bom momento para continuar gastando {}".format(
+                                    self.name, format_printable_string(print_currency(self.consumption),RED))+\
+                                "\ncom supérfluos! Minimize seus gastos, procure meios de ganhar mais, e"+\
+                                "\n{}!".format(format_printable_string("pague suas dívidas",RED)))
+                else:
+                    display_msg("\nEita, {}! o.o\nPrecisaremos que você busque formas de aumentar sua renda, corte gastos e"+\
+                                "\nfoque em {}.".format(format_printable_string("pagar suas dívidas",RED)))
+
+        display_msg("\nLEMBRETE: {}".format(
             format_printable_string(
                 self.fin_planner.financial_state.phase_goal(), GREEN, is_underlined=True,)))
         
@@ -210,9 +237,16 @@ class PlanSimulator:
         pass
 
     def planning_emergency_fund(self):
-        display_msg("\n***********************"+\
-            "\n{}, vamos começar nossos planos!\n".format(self.name)+\
-            "\nEm primeiro lugar, precisamos estar {}, certo?\nPor isso, precisamos ter um {}."\
+        display_msg("\n***********************")
+
+        if self.capital < 0:
+            display_msg("\n{}, vamos começar nossos planos...\n".format(self.name)+\
+                        "Mas, por tudo que é mais sagrado, {} de pagar suas dívidas antes!\n".format(
+                        format_printable_string("não se esqueça",RED)))
+        else:
+            display_msg("\n{}, vamos começar nossos planos!\n".format(self.name))
+
+        display_msg("\nEm primeiro lugar, precisamos estar {}, certo?\nPor isso, precisamos ter um {}."\
             .format(format_printable_string("preparados para imprevistos",BLUE),
                     format_printable_string("fundo de emergência",BLUE)))
         display_msg("O recomendável é que você esteja preparado para {} de crise."\
@@ -310,18 +344,27 @@ class PlanSimulator:
                 ))
         else:
             self.desired_age = None
-            while True:
-                display_msg("\nCerto. Qual {} ".format(format_printable_string("valor",
-                                                                    is_underlined=True))+\
-                            "você gostaria de investir todo mês?")
+
+            if self.fin_planner.revenue <= 0:
+                display_msg("\nVocê está sem condições de investir agora..."+\
+                            "\nMas, supondo que você consiga enxugar seus gastos e aumentar um pouco "+\
+                            "\nsua renda, qual {} ".format(format_printable_string("valor",
+                                                                        is_underlined=True))+\
+                                "você acredita que seria possível investir todo mês?")
                 self.monthly_investment = float(convert_number_abrev(input("Resposta: R$")))
-                if self.monthly_investment < self.fin_planner.revenue:
-                    break
-                display_msg("\nCuidado, {}. ".format(self.name)+\
-                        "Você não pode investir {} todo mês, ".format(format_printable_string(
-                            print_currency(self.monthly_investment),RED))+\
-                        "sendo que seu saldo mensal é de {}.".format(format_printable_string(
-                            print_currency(self.fin_planner.revenue),BLUE)))
+            else:
+                while True:
+                    display_msg("\nCerto. Qual {} ".format(format_printable_string("valor",
+                                                                        is_underlined=True))+\
+                                "você gostaria de investir todo mês?")
+                    self.monthly_investment = float(convert_number_abrev(input("Resposta: R$")))
+                    if self.monthly_investment < self.fin_planner.revenue:
+                        break
+                    display_msg("\nCuidado, {}. ".format(self.name)+\
+                            "Você não pode investir {} todo mês, ".format(format_printable_string(
+                                print_currency(self.monthly_investment),RED))+\
+                            "sendo que seu saldo mensal é de {}.".format(format_printable_string(
+                                print_currency(self.fin_planner.revenue),BLUE)))
 
         self.desired_patrimony, self.monthly_investment, self.desired_age = \
             self.fin_planner.manumission_point.get_desired_manumission(
@@ -359,7 +402,7 @@ class PlanSimulator:
                         "\nPara isso, você precisará focar em {}.".format(
                             format_printable_string("aumentar sua renda mensal", GREEN))+\
                         "\nEnquanto isso, podemos projetar em quanto tempo você conseguiria"+\
-                        " alcançar\na sua alcançar a sua meta se investisse uma quantia dentro de sua realidade."+\
+                        " \n a sua meta se investisse uma quantia dentro de sua realidade."+\
                         "\n\nVocê quer descobrir isso?\n[Responda com sim(s) ou não(n)]")
             decision = input("Resposta: ")
             if decision[0].lower() == "s":
