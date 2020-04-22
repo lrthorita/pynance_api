@@ -330,6 +330,36 @@ class PlanSimulator:
         
         self._get_manumission_projection(plan_option=plan_option)
     
+    def _compute_manumission(self):
+        display_msg("\nSendo conservador, podemos considerar a taxa Selic atual ({}% a.a.)"\
+                        .format(str(Selic().get_selic_meta()).replace('.',','))+\
+                    "\ncomo sendo a {} de suas aplicações.".format(format_printable_string(
+                        "taxa de valorização",BLUE))+\
+                    "\nGostaria de alterar esta taxa?\n[Responda com sim(s) ou não(n)]")
+        chage_interest = input("Resposta: ")
+
+        if chage_interest.lower() in ["s","sim"]:
+            display_msg("\nQual taxa de valorização média anual você acredita que seja possível?")
+            self.anual_investment_interest = float(input("Reposta (% a.a.): "))
+            self.investment_interest = (1+self.anual_investment_interest/100)**(1/12) - 1
+
+            if self.anual_investment_interest >= 19.7:
+                display_msg("\n{} Até o Warren Buffett, o maior investidor de todos ".format(
+                                format_printable_string("Meta audaciosa!",RED))+\
+                            "\nos tempos, teve uma média anual de 19,7% a.a.!\nMas vamos lá ... xD")
+            display_msg("\nEsta taxa representa {} atual.".format(format_printable_string(
+                        "{:.1f}% da Selic".format(100*self.anual_investment_interest/Selic().get_selic_meta()))))
+
+        else:
+            self.investment_interest = None
+        self.desired_patrimony, self.monthly_investment, self.desired_age = \
+            self.fin_planner.manumission_point.get_desired_manumission(
+                                                    desired_income=self.desired_income,
+                                                    monthly_investment=self.monthly_investment,
+                                                    desired_age=self.desired_age,
+                                                    investment_interest=self.investment_interest,
+                                                    start_today=True)
+
     def _get_manumission_projection(self, plan_option:int=1):
         if plan_option == 1:
             self.monthly_investment = None
@@ -366,18 +396,13 @@ class PlanSimulator:
                                 print_currency(self.monthly_investment),RED))+\
                             "sendo que seu saldo mensal é de {}.".format(format_printable_string(
                                 print_currency(self.fin_planner.revenue),BLUE)))
-
-        self.desired_patrimony, self.monthly_investment, self.desired_age = \
-            self.fin_planner.manumission_point.get_desired_manumission(
-                                                    desired_income=self.desired_income,
-                                                    monthly_investment=self.monthly_investment,
-                                                    desired_age=self.desired_age, 
-                                                    start_today=True)
+        
+        self._compute_manumission()
 
         # Summarizing the plan
-        display_msg("\nVocê disse que no futuro, você quer uma renda passiva de {}.".format(
-            format_printable_string(print_currency(self.desired_income)))+\
-            "\nConsiderando que a taxa de retorno seja em torno da taxa Selic atual ({}%), "\
+        display_msg("\nVocê disse que quer uma renda passiva de {} no futuro.".format(
+            format_printable_string(print_currency(self.desired_income),BLUE))+\
+            "\nConsiderando que a taxa de retorno seja em torno da taxa Selic atual ({}% a.a.), "\
                 .format(str(Selic().get_selic_meta()).replace('.',','))+\
             "\nentão você teria que alcançar um patrimônio de {}".format(format_printable_string(
                 print_currency(self.desired_patrimony), GREEN, is_bold=True))
@@ -385,15 +410,19 @@ class PlanSimulator:
         if plan_option == 1:
             display_msg("\nSe você quer atingir sua liberdade financeira com {} de idade, ".format(
                     format_printable_string("{} anos".format(self.desired_age),BLUE))+\
+                "e considerando uma taxa anual de crescimento de {}".format(format_printable_string(
+                    "{}% a.a.".format(self.anual_investment_interest),BLUE)) +\
                 "\nentão você terá que investir mensalmente {}".format(format_printable_string(
                     print_currency(self.monthly_investment),GREEN))
             )
         else:
-            display_msg("\nSe você vai investir {} mensalmente, ".format(
-                format_printable_string(print_currency(self.monthly_investment),BLUE))+\
+            display_msg("\nSe você vai investir {} mensalmente a uma taxa de {}, ".format(
+                format_printable_string(print_currency(self.monthly_investment),BLUE),
+                format_printable_string("{}% a.a.".format(self.anual_investment_interest),
+                                        BLUE))+\
                 "\nentão você atingirá sua liberdade financeira com {}.".format(
                     format_printable_string("{} anos".format(self.desired_age),GREEN)))
-                
+
         self._wait_user()
         
         diff = self.monthly_investment - self.fin_planner.revenue
@@ -403,7 +432,7 @@ class PlanSimulator:
                         "\nPara isso, você precisará focar em {}.".format(
                             format_printable_string("aumentar sua renda mensal", GREEN))+\
                         "\nEnquanto isso, podemos projetar em quanto tempo você conseguiria"+\
-                        " \n a sua meta se investisse uma quantia dentro de sua realidade."+\
+                        "\na sua meta se investisse uma quantia dentro de sua realidade."+\
                         "\n\nVocê quer descobrir isso?\n[Responda com sim(s) ou não(n)]")
             decision = input("Resposta: ")
             if decision[0].lower() == "s":
