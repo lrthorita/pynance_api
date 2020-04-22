@@ -15,4 +15,4 @@ Para quem usa Windows, basta clicar duas vezes no arquivo:
 
 
 Agora, se você está usando Linux, pode executar o arquivo:
-> [ubuntu]finance_planner.sh
+> ubuntu_finance_planner.sh
