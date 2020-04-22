@@ -76,9 +76,10 @@ def separate_digit_and_nondigit(str_value):
     return str_value[:d], str_value[d:]
 
 def convert_number_abrev(str_value):
-    if str_value == "":
+    if str_value in ["", " "]:
         return 0.0
     
+    str_value = str_value.strip()
     str_value.replace(" ","")
     str_value = convert_comma_to_dot(str_value)
     value, abrev_str  = separate_digit_and_nondigit(str_value)
